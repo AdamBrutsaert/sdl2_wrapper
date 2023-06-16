@@ -23,7 +23,7 @@ where
 {
     pub fn new(loader: &'l L) -> Self {
         ResourceManager {
-            loader: loader,
+            loader,
             cache: HashMap::new(),
         }
     }

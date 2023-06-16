@@ -36,11 +36,9 @@ impl Application<'_> {
             before = current;
 
             for event in event_pump.lock().unwrap().poll_iter() {
-                match event {
-                    Event::Quit { .. } => break 'mainloop,
-                    _ => {}
+                if let Event::Quit { .. } = event {
+                    break 'mainloop;
                 }
-
                 scene.on_event(self, event)?;
             }
             scene.on_update(self, dt)?;
@@ -95,5 +93,11 @@ impl<'a> ApplicationBuilder<'a> {
     ) -> Self {
         self.texture_creator = Some(texture_creator);
         self
+    }
+}
+
+impl<'a> Default for ApplicationBuilder<'a> {
+    fn default() -> Self {
+        Self::new()
     }
 }

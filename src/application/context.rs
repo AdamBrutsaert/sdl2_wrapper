@@ -1,5 +1,4 @@
 use std::sync::{Arc, Mutex};
-use std::rc::Rc;
 
 use sdl2::render::{Canvas, TextureCreator};
 use sdl2::video::{Window, WindowBuilder, WindowContext};
