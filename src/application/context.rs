@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::sync::{Arc, Mutex};
 use std::rc::Rc;
 
 use sdl2::render::{Canvas, TextureCreator};
@@ -8,7 +8,7 @@ use sdl2::VideoSubsystem;
 
 pub struct Context {
     video_subsystem: VideoSubsystem,
-    event_pump: Rc<RefCell<EventPump>>,
+    event_pump: Arc<Mutex<EventPump>>,
 }
 
 pub struct CanvasContext {
@@ -20,7 +20,7 @@ impl Context {
     pub fn new() -> Result<Self, String> {
         let sdl = sdl2::init()?;
         let video_subsystem = sdl.video()?;
-        let event_pump = Rc::new(RefCell::new(sdl.event_pump()?));
+        let event_pump = Arc::new(Mutex::new(sdl.event_pump()?));
 
         Ok(Self {
             video_subsystem,
@@ -28,7 +28,7 @@ impl Context {
         })
     }
 
-    pub fn event_pump(&self) -> Rc<RefCell<EventPump>> {
+    pub fn event_pump(&self) -> Arc<Mutex<EventPump>> {
         self.event_pump.clone()
     }
 

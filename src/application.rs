@@ -2,8 +2,7 @@ pub mod context;
 pub mod resource_loader;
 pub mod resource_manager;
 
-use std::cell::RefCell;
-use std::rc::Rc;
+use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
 pub use context::{CanvasContext, Context};
@@ -22,7 +21,7 @@ pub trait Scene {
 
 pub struct Application<'a> {
     pub canvas: Canvas<Window>,
-    event_pump: Rc<RefCell<EventPump>>,
+    event_pump: Arc<Mutex<EventPump>>,
     pub texture_manager: TextureManager<'a, WindowContext>,
 }
 
@@ -36,7 +35,7 @@ impl Application<'_> {
             let dt = current.duration_since(before).as_secs_f64();
             before = current;
 
-            for event in event_pump.borrow_mut().poll_iter() {
+            for event in event_pump.lock().unwrap().poll_iter() {
                 match event {
                     Event::Quit { .. } => break 'mainloop,
                     _ => {}
@@ -53,7 +52,7 @@ impl Application<'_> {
 }
 
 pub struct ApplicationBuilder<'a> {
-    event_pump: Option<Rc<RefCell<EventPump>>>,
+    event_pump: Option<Arc<Mutex<EventPump>>>,
     canvas: Option<Canvas<Window>>,
     texture_creator: Option<&'a TextureCreator<WindowContext>>,
 }
@@ -80,7 +79,7 @@ impl<'a> ApplicationBuilder<'a> {
         })
     }
 
-    pub fn with_event_pump(mut self, event_pump: Rc<RefCell<EventPump>>) -> Self {
+    pub fn with_event_pump(mut self, event_pump: Arc<Mutex<EventPump>>) -> Self {
         self.event_pump = Some(event_pump);
         self
     }
