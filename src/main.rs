@@ -1,8 +1,7 @@
-use sdl2_wrapper::application::{Scene, Application, ApplicationBuilder, CanvasContext, Context};
+use sdl2_wrapper::application::{Application, ApplicationBuilder, Context, Scene};
 
 use sdl2::event::Event;
 use sdl2::pixels::Color;
-use sdl2::rect::Rect;
 
 struct MyScene;
 
@@ -22,18 +21,6 @@ impl Scene for MyScene {
         let texture = app.texture_manager.load("assets/mario.png")?;
         app.canvas.copy(&texture, None, None)?;
 
-        let target = app.target_texture_manager.load("target")?;
-        app.canvas
-            .with_texture_canvas(&mut target.as_ref().borrow_mut(), |texture_canvas| {
-                texture_canvas.set_draw_color(Color::RGB(255, 0, 0));
-                texture_canvas.clear();
-                texture_canvas.set_draw_color(Color::RGB(0, 255, 0));
-                texture_canvas.fill_rect(Rect::new(0, 0, 50, 100)).unwrap();
-            })
-            .map_err(|e| e.to_string())?;
-        app.canvas
-            .copy(&target.borrow(), None, Rect::new(0, 0, 100, 100))?;
-
         app.canvas.present();
 
         Ok(())
@@ -42,11 +29,19 @@ impl Scene for MyScene {
 
 fn main() -> Result<(), String> {
     let context = Context::new()?;
-    let CanvasContext { canvas, texture_creator } = context.canvas_context()?;
+
+    let window = context
+        .window("SDL2 Demo", 800, 600)
+        .opengl()
+        .position_centered()
+        .build()
+        .map_err(|e| e.to_string())?;
+    let canvas_context = context.canvas_context(window)?;
+
     let mut app = ApplicationBuilder::new()
         .with_event_pump(context.event_pump())
-        .with_canvas(canvas)
-        .with_texture_creator(&texture_creator)
+        .with_canvas(canvas_context.canvas)
+        .with_texture_creator(&canvas_context.texture_creator)
         .build()?;
 
     app.run(MyScene)

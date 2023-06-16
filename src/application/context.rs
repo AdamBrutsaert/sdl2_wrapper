@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use sdl2::render::{Canvas, TextureCreator};
-use sdl2::video::{Window, WindowContext};
+use sdl2::video::{Window, WindowBuilder, WindowContext};
 use sdl2::EventPump;
 use sdl2::VideoSubsystem;
 
@@ -32,15 +32,11 @@ impl Context {
         self.event_pump.clone()
     }
 
-    pub fn canvas_context(&self) -> Result<CanvasContext, String> {
-        let window = self
-            .video_subsystem
-            .window("SDL2", 640, 480)
-            .opengl()
-            .position_centered()
-            .build()
-            .map_err(|e| e.to_string())?;
+    pub fn window(&self, title: &str, width: u32, height: u32) -> WindowBuilder {
+        self.video_subsystem.window(title, width, height)
+    }
 
+    pub fn canvas_context(&self, window: Window) -> Result<CanvasContext, String> {
         let canvas = window
             .into_canvas()
             .accelerated()

@@ -7,12 +7,12 @@ use std::rc::Rc;
 use std::time::Instant;
 
 pub use context::{CanvasContext, Context};
-use resource_manager::{TargetTextureManager, TextureManager};
+use resource_manager::TextureManager;
 
+use sdl2::event::Event;
 use sdl2::render::{Canvas, TextureCreator};
 use sdl2::video::{Window, WindowContext};
 use sdl2::EventPump;
-use sdl2::event::Event;
 
 pub trait Scene {
     fn on_event(&mut self, app: &mut Application, event: Event) -> Result<(), String>;
@@ -24,7 +24,6 @@ pub struct Application<'a> {
     pub canvas: Canvas<Window>,
     event_pump: Rc<RefCell<EventPump>>,
     pub texture_manager: TextureManager<'a, WindowContext>,
-    pub target_texture_manager: TargetTextureManager<'a, WindowContext>,
 }
 
 impl Application<'_> {
@@ -71,16 +70,13 @@ impl<'a> ApplicationBuilder<'a> {
     pub fn build(self) -> Result<Application<'a>, String> {
         let event_pump = self.event_pump.ok_or("event_pump is not set")?;
         let canvas = self.canvas.ok_or("canvas is not set")?;
-
         let texture_creator = self.texture_creator.ok_or("texture_creator is not set")?;
         let texture_manager = TextureManager::new(texture_creator);
-        let target_texture_manager = TargetTextureManager::new(texture_creator);
 
         Ok(Application {
             event_pump,
             canvas,
             texture_manager,
-            target_texture_manager,
         })
     }
 

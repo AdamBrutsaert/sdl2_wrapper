@@ -1,5 +1,4 @@
 use std::borrow::Borrow;
-use std::cell::RefCell;
 use std::collections::HashMap;
 use std::hash::Hash;
 use std::rc::Rc;
@@ -47,5 +46,3 @@ where
 }
 
 pub type TextureManager<'l, T> = ResourceManager<'l, String, Texture<'l>, TextureCreator<T>>;
-pub type TargetTextureManager<'l, T> =
-    ResourceManager<'l, String, RefCell<Texture<'l>>, TextureCreator<T>>;
