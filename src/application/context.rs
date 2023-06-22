@@ -52,3 +52,17 @@ impl Context {
         })
     }
 }
+
+#[macro_export]
+macro_rules! window {
+    ($context:expr, $title:expr, $width:expr, $height:expr) => {
+        {
+            let window = $context
+                .window($title, $width, $height)
+                .position_centered()
+                .build()
+                .map_err(|e| e.to_string());
+            window
+        }
+    };
+}

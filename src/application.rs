@@ -101,3 +101,19 @@ impl<'a> Default for ApplicationBuilder<'a> {
         Self::new()
     }
 }
+
+#[macro_export]
+macro_rules! application {
+    ($context:expr, $canvas_context:expr) => {
+        {
+            use $crate::application::ApplicationBuilder;
+
+            let app = ApplicationBuilder::new()
+                .with_event_pump($context.event_pump())
+                .with_canvas($canvas_context.canvas)
+                .with_texture_creator(&$canvas_context.texture_creator)
+                .build();
+            app
+        }
+    };
+}

@@ -1,4 +1,4 @@
-use sdl2_wrapper::application::{Application, ApplicationBuilder, Context, Scene};
+use sdl2_wrapper::{window, application, Application, Context, Scene};
 
 use sdl2::event::Event;
 use sdl2::pixels::Color;
@@ -29,20 +29,8 @@ impl Scene for MyScene {
 
 fn main() -> Result<(), String> {
     let context = Context::new()?;
-
-    let window = context
-        .window("SDL2 Demo", 800, 600)
-        .opengl()
-        .position_centered()
-        .build()
-        .map_err(|e| e.to_string())?;
-    let canvas_context = context.canvas_context(window)?;
-
-    let mut app = ApplicationBuilder::new()
-        .with_event_pump(context.event_pump())
-        .with_canvas(canvas_context.canvas)
-        .with_texture_creator(&canvas_context.texture_creator)
-        .build()?;
+    let canvas_context = context.canvas_context(window!(context, "SDL2 Demo", 800, 600)?)?;
+    let mut app = application!(context, canvas_context)?;
 
     app.run(MyScene)
 }
